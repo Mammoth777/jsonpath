@@ -6,15 +6,20 @@
 
 ## quick start
 
+`go get -u github.com/Mammoth777/jsonpath@v0.0.2`
+
 ```go
 func main() {
 	origin := `{"data": {"text": "人生短短几个秋", "type": "彩虹屁"}}`
-	var data any
+	var data interface{}
 	err := json.Unmarshal([]byte(origin), &data)
 	if err != nil {
 		log.Fatal(err)
 	}
-	val, err := core.Read(data, "$.data.text")
+	val, err := jsonpath.Read(data, "$.data.text")
+	log.Println(val, err)
+	jsonpath.Write(data, "$.data.text", "人生短短几个秋，我想要一个彩虹屁")
+	val, err = jsonpath.Read(data, "$.data.text")
 	log.Println(val, err)
 }
 ```
