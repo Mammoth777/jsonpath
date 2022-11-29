@@ -1,10 +1,11 @@
-package test
+package unittest
 
 import (
 	"encoding/json"
 	"log"
 	"testing"
 
+	"github.com/Mammoth777/jsonpath"
 	"github.com/Mammoth777/jsonpath/core"
 
 	"github.com/stretchr/testify/assert"
@@ -38,7 +39,7 @@ func init() {
 }
 
 func TestCompileObj(t *testing.T) {
-	steps := core.Compile("$.metadata.name")
+	steps := jsonpath.Compile("$.metadata.name")
 	for _, s := range steps {
 		log.Println(s.String())
 	}
@@ -48,7 +49,7 @@ func TestCompileObj(t *testing.T) {
 }
 
 func TestCompileDynamicObj(t *testing.T) {
-	steps := core.Compile("$.metadata['name']")
+	steps := jsonpath.Compile("$.metadata['name']")
 	for _, s := range steps {
 		log.Println(s.String())
 	}
@@ -59,7 +60,7 @@ func TestCompileDynamicObj(t *testing.T) {
 }
 
 func TestCompileArray(t *testing.T) {
-	steps := core.Compile("$.metadata['name'][34]")
+	steps := jsonpath.Compile("$.metadata['name'][34]")
 	for _, s := range steps {
 		log.Println(s.String())
 	}
@@ -73,14 +74,14 @@ func TestCompileArray(t *testing.T) {
 
 func TestReadObj(t *testing.T) {
 	should := assert.New(t)
-	value, err := core.Read(data, "$.metadata['name']")
+	value, err := jsonpath.Read(data, "$.metadata['name']")
 	log.Println(value, "value")
 	should.Nil(err)
 	should.Equal(value, "nginx")
 }
 
 func TestReadArray(t *testing.T) {
-	value, err := core.Read(data, "$.spec[1]")
+	value, err := jsonpath.Read(data, "$.spec[1]")
 	log.Println(value, "value")
 	should := assert.New(t)
 	should.Nil(err)
@@ -88,7 +89,7 @@ func TestReadArray(t *testing.T) {
 }
 
 func TestReadArray2(t *testing.T) {
-	value, err := core.Read(data, "$.arr[1][1]")
+	value, err := jsonpath.Read(data, "$.arr[1][1]")
 	log.Println(value, "value")
 	should := assert.New(t)
 	should.Nil(err)
@@ -97,8 +98,8 @@ func TestReadArray2(t *testing.T) {
 
 func TestWriteObj(t *testing.T) {
 	should := assert.New(t)
-	core.Write(data, "$.metadata['name']", "nginx2")
-	value, err := core.Read(data, "$.metadata['name']")
+	jsonpath.Write(data, "$.metadata['name']", "nginx2")
+	value, err := jsonpath.Read(data, "$.metadata['name']")
 	log.Println(value, "value")
 	should.Nil(err)
 	should.Equal(value, "nginx2")
@@ -106,8 +107,8 @@ func TestWriteObj(t *testing.T) {
 
 func TestWriteList(t *testing.T) {
 	should := assert.New(t)
-	core.Write(data, "$.arr[1][1]", "a")
-	value, err := core.Read(data, "$.arr[1][1]")
+	jsonpath.Write(data, "$.arr[1][1]", "a")
+	value, err := jsonpath.Read(data, "$.arr[1][1]")
 	should.Nil(err)
 	should.Equal(value, "a")
 }

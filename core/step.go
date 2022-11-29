@@ -6,6 +6,14 @@ import (
 	"regexp"
 )
 
+type actionType string
+
+var (
+	ROOT_ACTION = actionType("root")
+	KEY_ACTION  = actionType("key")
+	IDX_ACTION  = actionType("index")
+)
+
 
 type Step struct {
 	key string
@@ -35,7 +43,7 @@ func (s *Step) String() string {
 	return fmt.Sprintf("Step{action: %s, key: %s}", s.action, s.key)
 }
 
-func (s *Step) stickDot(origin string, index int) (int) {
+func (s *Step) StickDot(origin string, index int) (int) {
 	j := index + 1
 	for ; j < len(origin); j++ {
 		if origin[j] == '.' || origin[j] == '[' {
@@ -52,7 +60,7 @@ func (s *Step) stickDot(origin string, index int) (int) {
 	return index
 }
 
-func (s *Step) stickBracket(origin string, index int) (int) {
+func (s *Step) StickBracket(origin string, index int) (int) {
 	j := index + 1
 	for ; j < len(origin); j++ {
 		if origin[j] == ']' {

@@ -4,6 +4,21 @@
 
 未完待续， 突然发现json path有好多符号啊。竟然有人跟我说json path不好用， 科科。
 
+## quick start
+
+```go
+func main() {
+	origin := `{"data": {"text": "人生短短几个秋", "type": "彩虹屁"}}`
+	var data any
+	err := json.Unmarshal([]byte(origin), &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	val, err := core.Read(data, "$.data.text")
+	log.Println(val, err)
+}
+```
+
 ## todo
 
 - [x] 支持 $

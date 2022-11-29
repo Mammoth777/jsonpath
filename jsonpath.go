@@ -1,36 +1,30 @@
-package core
+package jsonpath
 
 import (
 	"errors"
 	"strconv"
+
+	"github.com/Mammoth777/jsonpath/core"
 )
 
-type actionType string
-
-var (
-	ROOT_ACTION = actionType("root")
-	KEY_ACTION  = actionType("key")
-	IDX_ACTION  = actionType("index")
-)
-
-func Compile(path string) []*Step {
-	steps := make([]*Step, 0)
+func Compile(path string) []*core.Step {
+	steps := make([]*core.Step, 0)
 	for i := 0; i < len(path); i++ {
 		c := path[i]
-		step := NewStep()
+		step := core.NewStep()
 		if c == '$' {
-			step.Action(ROOT_ACTION).Key(string(c))
+			step.Action(core.ROOT_ACTION).Key(string(c))
 		} else if c == '.' {
-			i = step.stickDot(path, i)
+			i = step.StickDot(path, i)
 		} else if c == '[' {
-			i = step.stickBracket(path, i)
+			i = step.StickBracket(path, i)
 		}
 		steps = append(steps, step)
 	}
 	return steps
 }
 
-func getValue(data any, steps []*Step) (any, error) {
+func getValue(data any, steps []*core.Step) (any, error) {
 	if len(steps) == 0 {
 		return data, errors.New("steps is empty")
 	}
@@ -40,14 +34,14 @@ func getValue(data any, steps []*Step) (any, error) {
 	)
 	for _, step := range steps {
 		switch step.GetAction() {
-		case ROOT_ACTION:
+		case core.ROOT_ACTION:
 			temp = data
-		case KEY_ACTION:
+		case core.KEY_ACTION:
 			temp, ok = temp.(map[string]any)[step.GetKey()]
 			if !ok {
 				return temp, errors.New("key not found")
 			}
-		case IDX_ACTION:
+		case core.IDX_ACTION:
 			list, ok := temp.([]any)
 			if !ok {
 				return temp, errors.New("not a list")
@@ -64,7 +58,7 @@ func getValue(data any, steps []*Step) (any, error) {
 	return temp, nil
 }
 
-func setValue(data any, steps []*Step, value any) (any, error) {
+func setValue(data any, steps []*core.Step, value any) (any, error) {
 	if len(steps) == 0 {
 		return data, errors.New("steps is empty")
 	}
@@ -74,9 +68,9 @@ func setValue(data any, steps []*Step, value any) (any, error) {
 	)
 	for i, step := range steps {
 		switch step.GetAction() {
-		case ROOT_ACTION:
+		case core.ROOT_ACTION:
 			temp = data
-		case KEY_ACTION:
+		case core.KEY_ACTION:
 			if i == len(steps)-1 {
 				temp.(map[string]any)[step.GetKey()] = value
 			} else {
@@ -85,7 +79,7 @@ func setValue(data any, steps []*Step, value any) (any, error) {
 					return data, errors.New("key not found")
 				}
 			}
-		case IDX_ACTION:
+		case core.IDX_ACTION:
 			if i == len(steps)-1 {
 				list, ok := temp.([]any)
 				if !ok {
